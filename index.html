@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ömer Studio | Cyberpunk Hub v3.0</title>
+    <title>Ömer Studio | Cyberpunk Hub v3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -29,8 +29,8 @@
 
         body, html { margin: 0; padding: 0; height: 100%; background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-main); transition: background-color 0.4s, color 0.4s; overflow: hidden; }
 
-        /* --- AUTH --- */
-        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #101025 0%, #000 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        /* --- AUTH EKRANI --- */
+        #authScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #101025 0%, #000 100%); z-index: 100000; display: flex; justify-content: center; align-items: center; }
         .auth-panel { background: var(--panel-bg); border: 2px solid var(--neon-blue); box-shadow: var(--glow); padding: 40px; width: 360px; text-align: center; border-radius: 10px; transition: 0.3s; }
         .auth-panel h1 { font-family: var(--font-header); color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); margin-bottom: 20px; }
         .field { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-blue); color: var(--text-color); box-sizing: border-box; outline: none; transition: 0.3s; }
@@ -42,36 +42,45 @@
         .btn-danger { background: transparent; border: 1px solid #ff0000; color: #ff0000; }
         .btn-danger:hover { background: #ff0000; color: #000; box-shadow: 0 0 15px #ff0000; }
 
-        /* --- HUB --- */
-        #mainHub { display: none; height: 100vh; grid-template-columns: 1fr 300px; }
+        /* --- ANA EKRAN (HUB) --- */
+        #mainHub { display: none; height: 100vh; grid-template-columns: 1fr 300px; position: relative; z-index: 10; }
         .main-view { padding: 30px; overflow-y: auto; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)); }
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .game-card { background: var(--panel-bg); border: 1px solid var(--neon-blue); padding: 20px; border-radius: 5px; text-align: center; text-decoration: none; color: inherit; transition: 0.3s; position: relative; overflow: hidden; }
+        .game-card { background: var(--panel-bg); border: 1px solid var(--neon-blue); padding: 20px; border-radius: 5px; text-align: center; text-decoration: none; color: inherit; transition: 0.3s; position: relative; overflow: hidden; display: block; }
         .game-card:hover { transform: scale(1.05); box-shadow: var(--glow); border-color: var(--neon-pink); }
         .game-card h3 { margin: 10px 0; font-family: var(--font-header); font-size: 1.1rem; }
         .game-card p { font-size: 0.8rem; opacity: 0.8; }
 
-        /* --- SIDEBAR & LEVELS --- */
-        .sidebar { background: var(--panel-bg); border-left: 2px solid var(--neon-blue); padding: 20px; display: flex; flex-direction: column; gap: 10px; transition: 0.3s; }
-        .side-item { background: rgba(255,255,255,0.03); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; cursor: pointer; font-family: var(--font-header); font-size: 12px; transition: 0.2s; }
+        /* --- YAN PANEL (SIDEBAR) --- */
+        .sidebar { background: var(--panel-bg); border-left: 2px solid var(--neon-blue); padding: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 20; position: relative; }
+        .side-item { background: rgba(255,255,255,0.03); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 12px; cursor: pointer; font-family: var(--font-header); font-size: 12px; transition: 0.2s; user-select: none; }
         .side-item:hover { background: var(--neon-blue); color: #000; box-shadow: var(--glow); }
         
         .lvl-container { background: #111; border: 1px solid var(--neon-pink); height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
         .lvl-fill { background: var(--neon-pink); height: 100%; width: 0%; transition: width 0.5s ease-in-out; }
 
-        /* --- MODALS --- */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--panel-bg); border: 2px solid var(--neon-yellow); padding: 25px; width: 400px; z-index: 10000; box-shadow: 0 0 50px rgba(0,0,0,0.9); border-radius: 8px; transition: 0.3s; }
+        /* --- YENİ MODAL (AÇILIR PENCERE) SİSTEMİ --- */
+        .modal { 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: var(--panel-bg); border: 2px solid var(--neon-yellow); 
+            padding: 25px; width: 400px; box-shadow: 0 0 50px rgba(0,0,0,0.9); 
+            border-radius: 8px; transition: 0.3s ease-in-out; 
+            /* Gelişmiş Görünürlük Mantığı */
+            opacity: 0; visibility: hidden; pointer-events: none; z-index: 200000;
+        }
+        .modal.active { 
+            opacity: 1; visibility: visible; pointer-events: auto; 
+        }
         .modal-h { border-bottom: 1px solid var(--neon-yellow); margin-bottom: 15px; padding-bottom: 10px; font-family: var(--font-header); color: var(--neon-yellow); display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- COMPONENTS --- */
-        #dinoCanvas { background: #050505; border: 2px solid var(--neon-blue); display: block; margin: 0 auto; box-shadow: 0 0 10px var(--neon-blue); border-radius: 4px; }
+        /* --- DİĞER BİLEŞENLER --- */
+        #dinoCanvas { background: #050505; border: 2px solid var(--neon-blue); display: block; margin: 0 auto; box-shadow: 0 0 10px var(--neon-blue); border-radius: 4px; cursor: pointer; }
         .social-btn { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255,255,255,0.05); margin-bottom: 10px; text-decoration: none; color: var(--text-color); border: 1px solid transparent; transition: 0.3s; }
         .social-btn:hover { border-color: var(--neon-pink); background: rgba(255,0,85,0.1); }
         .social-btn img { width: 30px; height: 30px; border-radius: 50%; }
         
-        .scanline { width: 100%; height: 100%; position: fixed; top: 0; left: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); z-index: 10001; pointer-events: none; transition: opacity 0.3s; }
+        .scanline { width: 100%; height: 100%; position: fixed; top: 0; left: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); z-index: 99999; pointer-events: none; transition: opacity 0.3s; }
         
-        /* Slider (Range) Stili */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--neon-blue); cursor: pointer; margin-top: -6px; box-shadow: var(--glow); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #333; border-radius: 2px; }
@@ -90,7 +99,6 @@
             <button class="btn-neon btn-blue" onclick="auth('login')" data-key="btn_login">GİRİŞ YAP</button>
             <p style="font-size: 11px; margin-top: 15px; cursor: pointer; color: var(--neon-yellow);" onclick="toggleAuth(false)">[ YENİ KAYIT OLUŞTUR ]</p>
         </div>
-
         <div class="auth-panel" id="regBox" style="display:none;">
             <h1 data-key="reg_title">SİSTEM KAYDI</h1>
             <input type="text" id="rUser" class="field" placeholder="Kullanıcı Adı Seçin">
@@ -144,14 +152,14 @@
     </div>
 
     <div id="profileMod" class="modal">
-        <div class="modal-h"><span>USER_ID_CONFIG</span> <span style="cursor:pointer" onclick="closeMod('profileMod')">[X]</span></div>
+        <div class="modal-h"><span>USER_ID_CONFIG</span> <span style="cursor:pointer; color: white;" onclick="closeMod('profileMod')">[KAPAT]</span></div>
         <label style="font-size: 12px; opacity: 0.7;">Kullanıcı Adı Değiştir:</label>
         <input type="text" id="upUser" class="field" placeholder="Yeni Kullanıcı Adı">
         <button class="btn-neon btn-blue" onclick="saveProfile()">PROFİLİ GÜNCELLE</button>
     </div>
 
     <div id="socialMod" class="modal">
-        <div class="modal-h"><span data-key="nav_social">SOSYAL AĞLAR</span> <span style="cursor:pointer" onclick="closeMod('socialMod')">[X]</span></div>
+        <div class="modal-h"><span data-key="nav_social">SOSYAL AĞLAR</span> <span style="cursor:pointer; color: white;" onclick="closeMod('socialMod')">[KAPAT]</span></div>
         <a href="https://www.youtube.com/@TheBaddking2" target="_blank" class="social-btn">
             <img src="https://via.placeholder.com/30/ff0000/ffffff?text=YT" alt="YT">
             <span>TheBaddking 2</span>
@@ -167,7 +175,7 @@
     </div>
 
     <div id="settingsMod" class="modal">
-        <div class="modal-h"><span>SYSTEM_CONFIG_V3</span> <span style="cursor:pointer" onclick="closeMod('settingsMod')">[X]</span></div>
+        <div class="modal-h"><span>SYSTEM_CONFIG_V3</span> <span style="cursor:pointer; color: white;" onclick="closeMod('settingsMod')">[KAPAT]</span></div>
         
         <label style="font-size: 12px;" data-key="set_theme">Arayüz Teması:</label>
         <select id="themeSelect" onchange="applySettings()" class="field">
@@ -178,7 +186,7 @@
             <option value="classic">Classic (Light & Clean)</option>
         </select>
 
-        <label style="font-size: 12px;" data-key="set_lang">Sistem Dili (Language):</label>
+        <label style="font-size: 12px;" data-key="set_lang">Sistem Dili:</label>
         <select id="langSelect" onchange="applySettings()" class="field">
             <option value="tr">Türkçe</option>
             <option value="en">English</option>
@@ -200,64 +208,56 @@
         </div>
 
         <div style="margin-top: 20px; border-top: 1px dashed #ff0000; padding-top: 15px;">
-            <button class="btn-neon btn-danger" onclick="hardReset()" style="font-size: 10px; padding: 10px;">⚠️ TÜM SİSTEMİ VE VERİLERİ SIFIRLA ⚠️</button>
+            <button class="btn-neon btn-danger" onclick="hardReset()" style="font-size: 10px; padding: 10px;">⚠️ SİSTEMİ SIFIRLA ⚠️</button>
         </div>
     </div>
 
     <div id="dinoMod" class="modal" style="width: 400px;">
-        <div class="modal-h"><span>DinoFAST v2.0 (Terminal)</span> <span style="cursor:pointer" onclick="isGame=false; closeMod('dinoMod')">[X]</span></div>
+        <div class="modal-h"><span>DinoFAST v2.0</span> <span style="cursor:pointer; color: white;" onclick="isGame=false; closeMod('dinoMod')">[KAPAT]</span></div>
         <canvas id="dinoCanvas" width="350" height="150"></canvas>
-        <p style="font-size: 10px; text-align:center; margin-top:10px; color: var(--neon-blue);">Zıplamak için [ BOŞLUK TUŞU ] veya [ TIKLA ]</p>
+        <p style="font-size: 10px; text-align:center; margin-top:10px; color: var(--neon-blue);">Zıplamak için [ BOŞLUK TUŞU ] veya Oyuna [ TIKLA ]</p>
     </div>
 
     <script>
-        // --- VERİ MODELİ VE KAYIT SİSTEMİ ---
-        let uData = {
-            name: "Gamer",
-            pass: "",
-            exp: 0,
-            lvl: 1,
-            theme: "cyber",
-            lang: "tr",
-            scanlines: true
-        };
+        let uData = { name: "Gamer", pass: "", exp: 0, lvl: 1, theme: "cyber", lang: "tr", scanlines: true };
 
         const i18n = {
             tr: { title: "ÖMER STUDIO", btn_login: "GİRİŞ YAP", nav_account: "HESABIM", nav_settings: "SİSTEM AYARLARI", nav_header: "TERMINAL", nav_dino: "DinoFAST v2", nav_social: "SOSYAL AĞLAR", set_theme: "Arayüz Teması:", set_lang: "Sistem Dili:" },
-            en: { title: "OMER STUDIO", btn_login: "SYSTEM LOGIN", nav_account: "MY ACCOUNT", nav_settings: "SYSTEM CONFIG", nav_header: "TERMINAL", nav_dino: "DinoFAST v2", nav_social: "NETWORK", set_theme: "UI Theme:", set_lang: "System Language:" }
+            en: { title: "OMER STUDIO", btn_login: "LOGIN", nav_account: "MY ACCOUNT", nav_settings: "SYSTEM CONFIG", nav_header: "TERMINAL", nav_dino: "DinoFAST v2", nav_social: "NETWORK", set_theme: "UI Theme:", set_lang: "System Language:" }
         };
 
+        // Yeni Modal Sistemi (Display yerine Sınıf ekleme)
+        function openMod(id) {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); // Diğerlerini kapat
+            document.getElementById(id).classList.add('active'); // İstenileni aç
+        }
+        function closeMod(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Veri Kayıt & Yükleme
         function loadStorage() {
             const saved = localStorage.getItem('omerStudio_Data');
             if(saved) {
                 uData = JSON.parse(saved);
-                
-                // Ayarları arayüze yansıt
                 document.getElementById('themeSelect').value = uData.theme;
                 document.getElementById('langSelect').value = uData.lang;
                 document.getElementById('scanlineToggle').checked = uData.scanlines;
-                
-                // Tema ve dili uygula
                 document.body.className = uData.theme + '-theme';
                 document.getElementById('scanlineEffect').style.opacity = uData.scanlines ? "1" : "0";
                 setLang(uData.lang);
-                
                 updateUI();
             }
         }
-
         function saveStorage() {
             localStorage.setItem('omerStudio_Data', JSON.stringify(uData));
             updateUI();
         }
 
-        // --- LEVEL SİSTEMİ UI GÜNCELLEME ---
         function updateUI() {
             document.getElementById('uiLvl').innerText = uData.lvl;
             document.getElementById('uiExp').innerText = uData.exp;
             document.getElementById('userTag').innerText = uData.name.toUpperCase();
-            
-            // Barı güncelle (Her level 100 exp, % olarak hesapla)
             let progress = uData.exp % 100;
             document.getElementById('uiBar').style.width = progress + "%";
         }
@@ -272,16 +272,13 @@
             saveStorage();
         }
 
-        // --- AYARLAR VE PROFİL FONKSİYONLARI ---
         function applySettings() {
             uData.theme = document.getElementById('themeSelect').value;
             uData.lang = document.getElementById('langSelect').value;
             uData.scanlines = document.getElementById('scanlineToggle').checked;
-            
             document.body.className = uData.theme + '-theme';
             document.getElementById('scanlineEffect').style.opacity = uData.scanlines ? "1" : "0";
             setLang(uData.lang);
-            
             saveStorage();
         }
 
@@ -293,9 +290,7 @@
             });
         }
 
-        function changeVolume(val) {
-            document.getElementById('bgMusic').volume = val;
-        }
+        function changeVolume(val) { document.getElementById('bgMusic').volume = val; }
 
         function saveProfile() {
             const newName = document.getElementById('upUser').value;
@@ -311,52 +306,38 @@
         function hardReset() {
             if(confirm("TÜM VERİLER SİLİNECEK! Level, EXP ve hesabın sıfırlanacak. Emin misin?")) {
                 localStorage.removeItem('omerStudio_Data');
-                location.reload(); // Sayfayı yenile ve başa dön
+                location.reload(); 
             }
         }
 
-        // --- AUTH (GİRİŞ/KAYIT) FONKSİYONLARI ---
+        // Giriş Sistemi
         function auth(t) {
             if(t === 'reg') {
                 const n = document.getElementById('rUser').value;
                 const p = document.getElementById('rPass').value;
                 const pc = document.getElementById('rPassC').value;
-                
                 if(n && p && p === pc) {
-                    uData.name = n; 
-                    uData.pass = p;
-                    uData.exp = 0;
-                    uData.lvl = 1;
+                    uData.name = n; uData.pass = p; uData.exp = 0; uData.lvl = 1;
                     saveStorage();
                     alert("Kayıt Başarılı! Sisteme giriş yapabilirsiniz.");
                     toggleAuth(true);
-                } else {
-                    alert("HATA: Şifreler uyuşmuyor veya alanlar boş!");
-                }
+                } else { alert("HATA: Şifreler uyuşmuyor veya alanlar boş!"); }
             } else {
                 const ln = document.getElementById('lUser').value;
                 const lp = document.getElementById('lPass').value;
-                
-                // Eğer LocalStorage'da kayıtlı şifre varsa onu kontrol et
                 if(uData.pass !== "" && ln === uData.name && lp === uData.pass) {
                     girisBasarili();
-                } 
-                // Eğer ilk kez giriliyorsa (hard reset atılmışsa) veya test amaçlı Admin girişi
-                else if (uData.pass === "" && ln === "Admin" && lp === "123") {
-                    uData.name = "Admin";
-                    girisBasarili();
-                }
-                else { 
-                    alert("ERİŞİM REDDEDİLDİ! Kullanıcı adı veya şifre hatalı."); 
-                }
+                } else if (uData.pass === "" && ln === "Admin" && lp === "123") {
+                    uData.name = "Admin"; girisBasarili();
+                } else { alert("ERİŞİM REDDEDİLDİ! Kullanıcı adı veya şifre hatalı."); }
             }
         }
 
         function girisBasarili() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainHub').style.display = 'grid';
-            gainExp(20); // Giriş ödülü
-            document.getElementById('bgMusic').volume = 0.5; // Varsayılan ses
+            gainExp(20);
+            document.getElementById('bgMusic').volume = 0.5;
         }
 
         function toggleAuth(isL) {
@@ -364,10 +345,6 @@
             document.getElementById('regBox').style.display = isL ? 'none' : 'block';
         }
 
-        // --- YARDIMCI ARAYÜZ FONKSİYONLARI ---
-        function openMod(id) { document.getElementById(id).style.display = 'block'; }
-        function closeMod(id) { document.getElementById(id).style.display = 'none'; }
-        
         function doSearch() {
             let f = document.getElementById('search').value.toUpperCase();
             let c = document.getElementById('grid').getElementsByClassName('game-card');
@@ -376,9 +353,8 @@
             }
         }
 
-        // --- DINOFAST MOTORU (GELİŞTİRİLMİŞ EFEKTLERLE) ---
-        let dinoY = 130, dinoV = 0, obsX = 350, score = 0, isGame = false;
-        let frame = 0;
+        // --- DINO MOTORU ---
+        let dinoY = 130, dinoV = 0, obsX = 350, score = 0, isGame = false, frame = 0;
         const canvas = document.getElementById('dinoCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -395,56 +371,33 @@
         function animateDino() {
             if(!isGame) return;
             frame++;
+            ctx.fillStyle = "rgba(5, 5, 5, 0.3)"; ctx.fillRect(0,0,350,150);
             
-            // Motion Blur Arka Plan
-            ctx.fillStyle = "rgba(5, 5, 5, 0.3)"; 
-            ctx.fillRect(0,0,350,150);
-            
-            // Neon Zemin
             ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--neon-blue').trim() || "#00f3ff";
             ctx.beginPath(); ctx.moveTo(0, 145); ctx.lineTo(350, 145); ctx.stroke();
 
-            // Fizik
             dinoV += 0.35; dinoY += dinoV;
             if(dinoY > 130) { dinoY = 130; dinoV = 0; }
             
-            // Dino Çizimi (Cyber Kare)
-            ctx.shadowBlur = 10; 
-            ctx.shadowColor = ctx.strokeStyle;
-            ctx.fillStyle = ctx.strokeStyle;
-            ctx.fillRect(30, dinoY, 20, 20);
+            ctx.shadowBlur = 10; ctx.shadowColor = ctx.strokeStyle;
+            ctx.fillStyle = ctx.strokeStyle; ctx.fillRect(30, dinoY, 20, 20);
             
-            // Engel Çizimi (Kırmızı Virüs)
-            ctx.shadowColor = "#ff0055";
-            ctx.fillStyle = "#ff0055";
+            ctx.shadowColor = "#ff0055"; ctx.fillStyle = "#ff0055";
             let obsH = 20 + Math.sin(frame * 0.1) * 5; 
-            ctx.fillRect(obsX, 145 - obsH, 15, obsH);
-            ctx.shadowBlur = 0;
+            ctx.fillRect(obsX, 145 - obsH, 15, obsH); ctx.shadowBlur = 0;
 
-            // Hızlanma Mekaniği
-            let hiz = 4 + (score * 0.1); // Skor arttıkça hızlanır
-            obsX -= hiz; 
+            let hiz = 4 + (score * 0.1); obsX -= hiz; 
             if(obsX < -20) { obsX = 350; score++; }
             
-            // Skor Tablosu
-            ctx.fillStyle = "#fff"; ctx.font = "14px Orbitron";
-            ctx.fillText("DATA: " + score + " TB", 10, 20);
+            ctx.fillStyle = "#fff"; ctx.font = "14px Orbitron"; ctx.fillText("DATA: " + score + " TB", 10, 20);
 
-            // Çarpışma Kontrolü (Hitbox)
             if(obsX < 50 && obsX > 15 && dinoY > (125 - obsH)) { 
-                ctx.fillStyle = "red"; ctx.font = "20px Orbitron";
-                ctx.fillText("SYSTEM CRASH", 90, 75);
+                ctx.fillStyle = "red"; ctx.font = "20px Orbitron"; ctx.fillText("SYSTEM CRASH", 90, 75);
                 isGame = false; 
-                setTimeout(() => {
-                    alert("BAĞLANTI KESİLDİ! Toplanan Veri: " + score + " TB");
-                    gainExp(score * 2); // Dino'da yapılan skor başına 2 EXP kazandırır!
-                }, 100);
-            } else { 
-                requestAnimationFrame(animateDino); 
-            }
+                setTimeout(() => { alert("BAĞLANTI KESİLDİ! Toplanan Veri: " + score + " TB"); gainExp(score * 2); }, 100);
+            } else { requestAnimationFrame(animateDino); }
         }
 
-        // Sayfa açıldığında verileri yükle
         window.onload = loadStorage;
     </script>
 </body>
